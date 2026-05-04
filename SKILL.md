@@ -27,13 +27,49 @@ MINERU="/home/user/.hermes/hermes-agent/venv/bin/mineru"
 WORK_BASE="/tmp/paper-reader"
 ARCHIVE_BASE="$HOME/obsidian/papers"
 EXTRACT_SCRIPT="$HOME/.hermes/skills/paper-reader/scripts/extract.sh"
+JINA_READER="https://r.jina.ai"
 ```
+
+### PDF Fetch Strategy (3-Tier)
+
+| Priority | Method | Works For | Quality |
+|----------|--------|-----------|---------|
+| **Tier 1** | Jina Reader (`r.jina.ai`) | arXiv, bioRxiv, open-access PDFs, most DOIs | Full text → Markdown |
+| **Tier 2** | `curl -L` direct download | arXiv PDF only | Raw PDF → MinerU |
+| **Tier 3** | web_search fallback | Nature, Elsevier, all paywalled | Metadata + abstract only |
+
+**Why Jina Reader first**: It converts PDF URLs directly to Markdown text, bypassing Cloudflare/bot detection. For open-access papers, this eliminates the need to download PDF + run MinerU entirely.
+
+**Jina Reader Usage**:
+```bash
+# Convert any paper URL to Markdown
+curl -sL --max-time 30 "https://r.jina.ai/{PAPER_URL}" -H "Accept: text/plain"
+
+# Examples (all verified working):
+# arXiv:      https://r.jina.ai/https://arxiv.org/pdf/2604.18559         ✅ Full text
+# bioRxiv:    https://r.jina.ai/https://www.biorxiv.org/content/...v1.full.pdf  ✅ Full text
+# DOI:        https://r.jina.ai/https://doi.org/10.1038/s42256-026-01223-x      ⚠️ Partial (paywall)
+# Nature:     https://r.jina.ai/https://www.nature.com/articles/...              ⚠️ Timeout likely
+```
+
+**Rate limits**: Free tier 20 RPM. For batch processing, add delays or use API key.
 
 ---
 
 ## Step 1: Input Parse & Fetch
 
-Detect input type and obtain PDF file:
+Detect input type and obtain paper content. **Always try Jina Reader first** for URLs.
+
+### Decision Flow
+
+```
+Input → Is it a local file? → Yes → Use local file
+                             → No  → Try Jina Reader (Tier 1)
+                                    → Got full text? → Use it directly (skip MinerU!)
+                                    → Timeout/partial? → Try curl download (Tier 2)
+                                                         → Got PDF? → MinerU extraction
+                                                         → Failed? → web_search fallback (Tier 3)
+```
 
 ### Local File
 ```
@@ -43,28 +79,42 @@ Input starts with "/" or "~" or "./" or "../" → local file path
 3. Set PDF_PATH={path}
 ```
 
-### arXiv ID
-```
-Input matches pattern: \d{4}\.\d{4,5} (e.g. "2402.03300")
-1. WORK_DIR="/tmp/paper-reader/$(date +%s)"
-2. mkdir -p "$WORK_DIR"
-3. curl -L -o "$WORK_DIR/paper.pdf" "https://arxiv.org/pdf/{ARXIV_ID}"
-4. Verify: file size > 10KB and file type is PDF
-5. Set PDF_PATH="$WORK_DIR/paper.pdf"
+### URL — Jina Reader (Tier 1, ALWAYS TRY FIRST)
+
+For ANY URL (arXiv, bioRxiv, DOI, publisher page):
+```bash
+# Try Jina Reader
+RESPONSE=$(curl -sL --max-time 30 "https://r.jina.ai/{URL}" -H "Accept: text/plain")
+# Check if we got meaningful content (>1000 chars = likely full text)
+if [ $(echo "$RESPONSE" | wc -c) -gt 1000 ]; then
+    # Save the markdown directly — NO need for MinerU!
+    echo "$RESPONSE" > "$WORK_DIR/paper_jina.md"
+    FULLTEXT_PATH="$WORK_DIR/paper_jina.md"
+    SKIP_MINERU=true  # Skip MinerU step, go directly to analysis
+fi
 ```
 
-### arXiv URL
+### URL — Direct PDF Download (Tier 2, for arXiv only)
+
+Only if Jina Reader fails or returns <1000 chars:
+```bash
+# arXiv PDF download
+curl -L -o "$WORK_DIR/paper.pdf" "https://arxiv.org/pdf/{ARXIV_ID}"
+# Verify: file size > 10KB and file type is PDF
 ```
-Input contains "arxiv.org" → extract arXiv ID from URL
-- From "arxiv.org/abs/XXXX.XXXXX" → extract XXXX.XXXXX
-- From "arxiv.org/pdf/XXXX.XXXXX" → extract XXXX.XXXXX
-Then follow arXiv ID procedure above
-```
+
+### URL — web_search Fallback (Tier 3)
+
+For paywalled papers where both Jina Reader and curl fail:
+- Use `web_search()` with paper title/DOI to gather metadata
+- Accept that archive will be metadata-level only
+- Mark archive note: `注: 付费论文，基于搜索信息整理`
 
 ### Error Handling
 - File not found → "❌ 文件不存在: {path}，请检查路径"
 - Not PDF → "❌ 不是PDF文件: {actual_type}"
-- Download fail → "❌ 下载失败，请手动下载后提供本地路径"
+- Jina Reader timeout → Fall to Tier 2/3 automatically
+- All methods fail → "❌ 无法获取论文内容。请手动下载PDF后提供本地路径"
 
 ---
 
@@ -208,9 +258,40 @@ When user provides multiple papers (Paper Alert), use batch mode:
 skill_view("paper-reader", "references/mode-batch.md")
 ```
 
-Key workflow: classify by source → parallel download (arXiv only) → serial MinerU (background) → parallel search-mode for paywalled papers → parallel archive → summary table.
+Key workflow: classify by source → **parallel Jina Reader for ALL URLs** (Tier 1) → serial MinerU for local/failed PDFs (Tier 2) → parallel web_search for remaining paywalled (Tier 3) → parallel archive → summary table.
 
-**Critical**: MinerU is strictly serial. Paywalled papers (Nature/Elsevier/bioRxiv) cannot be downloaded via curl — use web_search fallback immediately.
+**Critical**: MinerU is strictly serial. **Always try Jina Reader first** — it converts PDF URLs to Markdown directly, bypassing Cloudflare/bot detection. For arXiv/bioRxiv/open-access, this skips MinerU entirely.
+
+### Batch Mode — Operational Notes (validated 2026-05-04)
+
+**Jina Reader (`r.jina.ai`) — THE Game Changer**:
+- arXiv PDFs: `r.jina.ai/https://arxiv.org/pdf/XXXX.XXXXX` → Full Markdown text ✅
+- bioRxiv PDFs: `r.jina.ai/https://www.biorxiv.org/content/...v1.full.pdf` → Full text ✅
+- DOI redirects: `r.jina.ai/https://doi.org/10....` → Partial/full depending on paywall ⚠️
+- Nature articles: Likely timeout (>30s) → Fall to web_search ❌
+- Free tier: 20 RPM. For 9-paper batches, use ~3s delay between requests.
+- **Key benefit**: Jina Reader bypasses Cloudflare entirely — no 403/403 errors!
+
+**PDF Download Reality Check (without Jina Reader)**:
+- arXiv PDFs: `curl -L` works reliably → get actual PDF
+- Nature (`nature.com/*.pdf`): Returns HTML redirect, NOT PDF. Use web_search for metadata.
+- Elsevier/ScienceDirect: 403 Forbidden. Use web_search.
+- bioRxiv: Cloudflare bot detection (403). Use Jina Reader or web_search.
+- `web_extract` may be blocked by the runtime environment entirely — always have web_search as primary fallback.
+
+**MinerU Timing** (reference, your hardware):
+- 43-page paper: ~1m33s
+- 26-page paper: ~1m58s
+- Always run MinerU in background (`terminal(background=true)`) so other tasks proceed in parallel.
+
+**Deep Analysis of Extracted Papers**:
+- `delegate_task` subagents may timeout (300s) when reading large extracted Markdown files (500+ lines). Prefer direct `read_file` + `execute_code` in the main session for reliability.
+- For 9+ paper batches: write archive notes via `execute_code` batch script (1 tool call for all notes) rather than individual writes.
+
+**Paywalled Paper Archive Quality**:
+- web_search returns enough for: title, authors, journal, DOI, abstract, key methods, main results.
+- NOT sufficient for: detailed figures, supplementary data, specific quantitative results.
+- Mark these notes clearly with `注: 付费论文，基于搜索信息整理` in the archive.
 
 ---
 
