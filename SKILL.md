@@ -28,9 +28,12 @@ WORK_BASE="/tmp/paper-reader"
 ARCHIVE_BASE="$HOME/obsidian/papers"
 EXTRACT_SCRIPT="$HOME/.hermes/skills/paper-reader/scripts/extract.sh"
 JINA_READER="https://r.jina.ai"
+FETCH_SCRIPT="$HOME/.hermes/skills/paper-reader/scripts/fetch_paper.py"
 ```
 
 ### PDF Fetch Strategy (3-Tier)
+
+**Unified tool**: `python3 $FETCH_SCRIPT <url> --output-dir <dir>` handles all tiers automatically. Use it for both single and batch mode.
 
 | Priority | Method | Works For | Quality |
 |----------|--------|-----------|---------|
