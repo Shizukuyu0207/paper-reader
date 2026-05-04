@@ -60,37 +60,58 @@ Procesa múltiples artículos simultáneamente. Maneja fuentes mixtas:
 
 ## 🚀 Instalación
 
+### Opción 1: Git Clone (Recomendado)
+
 ```bash
-# Clonar en el directorio de skills de Hermes
 cd ~/.hermes/skills/
 git clone https://github.com/Shizukuyu0207/paper-reader.git
 ```
 
-O copiar manualmente la carpeta `paper-reader/` a `~/.hermes/skills/paper-reader/`.
+### Opción 2: El método del "Investigador Perezoso"
+
+¿No quieres tocar la terminal? Simplemente lanza la URL de este repo a tu Hermes Agent y copia-pega esto:
+
+```
+Instala este skill: https://github.com/Shizukuyu0207/paper-reader
+
+Clonalo en ~/.hermes/skills/paper-reader/,
+verifica que MinerU esté instalado (which mineru), si no lo está sáltalo y avísame.
+Cuando termines, confírmame la instalación y cuéntame qué puede hacer.
+```
+
+Tu Agent se encargará del resto. Ve a por un café. ☕
+
+### Opción 3: Instalación manual
+
+Descarga el ZIP y extrae en `~/.hermes/skills/paper-reader/`.
 
 ### Requisitos previos
 
-- [MinerU](https://github.com/opendatalab/MinerU) — Motor de extracción de PDF
-- [Hermes Agent](https://github.com/henvic/hermes) — Framework de agentes
-- Bóveda de Obsidian (opcional, para notas de archivo)
+| Dependencia | Requerido | Instalación |
+|-------------|-----------|-------------|
+| [Hermes Agent](https://github.com/henvic/hermes) | ✅ Sí | Ver documentación de Hermes |
+| [MinerU](https://github.com/opendatalab/MinerU) | ✅ Sí | `pip install mineru` o ver su README |
+| Obsidian | Opcional | Para notas de archivo |
 
-## 📋 Uso
+## 📋 Inicio rápido
+
+```bash
+# 1. Instalar
+cd ~/.hermes/skills/ && git clone https://github.com/Shizukuyu0207/paper-reader.git
+
+# 2. Verificar
+ls paper-reader/SKILL.md  # debería existir
+
+# 3. Usar (en el chat de Hermes)
+```
+
+Luego en tu conversación con Hermes:
 
 ```
-# Artículo individual — archivo local
-读论文 /ruta/al/articulo.pdf
-
-# Artículo individual — arXiv
 read this paper https://arxiv.org/abs/2604.18559
-
-# Por lotes — Paper Alert
-Paper Alert:
-1. Allosteric Switches https://www.nature.com/articles/s41587-026-03081-9
-2. ConforNets https://arxiv.org/abs/2604.18559
-3. trRosettaRNA2 https://doi.org/10.1038/s42256-026-01223-x
 ```
 
-El skill: obtiene/verifica el PDF → detecta el dominio → selecciona el modo → analiza → archiva
+Eso es todo. El skill detectará automáticamente el dominio, preguntará el modo y hará el resto.
 
 ## 📝 Ejemplo de salida archivada
 
@@ -120,6 +141,16 @@ Seguido de secciones estructuradas: Información básica · Pregunta de investig
 | `ARCHIVE_BASE` | `~/obsidian/papers` | Raíz del archivo Obsidian |
 | `EXTRACT_SCRIPT` | `scripts/extract.sh` | Ruta del script auxiliar de extracción |
 
+## 🤝 Contribuir
+
+¿Encontraste un bug? ¿Quieres añadir un checklist de dominio? Los PR son bienvenidos.
+
+1. Haz Fork de este repo
+2. Crea tu rama (`git checkout -b feature/my-feature`)
+3. Haz commit (`git commit -m 'Add my feature'`)
+4. Haz push (`git push origin feature/my-feature`)
+5. Abre un Pull Request
+
 ## 📄 Licencia
 
 MIT License — ver [LICENSE](../LICENSE).
@@ -128,7 +159,7 @@ MIT License — ver [LICENSE](../LICENSE).
 
 - [MinerU](https://github.com/opendatalab/MinerU) — Motor de extracción de PDF
 - [Hermes Agent](https://github.com/henvic/hermes) — Framework de agentes
-- Hecho para investigadores que tienen demasiados artículos para leer
+- Para todos los investigadores con 50 pestañas de artículos sin leer en su navegador
 
 <div align="center">
 Hecho con ❤️ para investigadores que leen demasiados artículos

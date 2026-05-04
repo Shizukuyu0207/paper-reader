@@ -60,37 +60,58 @@ Skill для [Hermes Agent](https://github.com/henvic/hermes), который ч
 
 ## 🚀 Установка
 
+### Способ 1: Git Clone (Рекомендуется)
+
 ```bash
-# Клонировать в директорию skills Hermes
 cd ~/.hermes/skills/
 git clone https://github.com/Shizukuyu0207/paper-reader.git
 ```
 
-Или вручную скопируйте папку `paper-reader/` в `~/.hermes/skills/paper-reader/`.
+### Способ 2: Метод «Ленивого Исследователя»
+
+Не хотите открывать терминал? Просто киньте ссылку на этот репозиторий вашему Hermes Agent и скопируйте:
+
+```
+Установи этот skill: https://github.com/Shizukuyu0207/paper-reader
+
+Склонируй его в ~/.hermes/skills/paper-reader/,
+проверь что MinerU установлен (which mineru), если нет — пропусти и скажи мне.
+Когда закончишь, подтвердите установку и расскажи, что умеет этот skill.
+```
+
+Ваш Agent сделает всё сам. Идите заваривать чай. 🍵
+
+### Способ 3: Ручная установка
+
+Скачайте ZIP и распакуйте в `~/.hermes/skills/paper-reader/`.
 
 ### Зависимости
 
-- [MinerU](https://github.com/opendatalab/MinerU) — движок извлечения PDF
-- [Hermes Agent](https://github.com/henvic/hermes) — фреймворк агентов
-- Хранилище Obsidian (опционально, для архивных заметок)
+| Зависимость | Обязательна | Установка |
+|-------------|------------|-----------|
+| [Hermes Agent](https://github.com/henvic/hermes) | ✅ Да | См. документацию Hermes |
+| [MinerU](https://github.com/opendatalab/MinerU) | ✅ Да | `pip install mineru` или см. их README |
+| Obsidian | Опционально | Для архивных заметок |
 
-## 📋 Использование
+## 📋 Быстрый старт
+
+```bash
+# 1. Установить
+cd ~/.hermes/skills/ && git clone https://github.com/Shizukuyu0207/paper-reader.git
+
+# 2. Проверить
+ls paper-reader/SKILL.md  # должен существовать
+
+# 3. Использовать (в чате Hermes)
+```
+
+Затем в чате Hermes:
 
 ```
-# Одна статья — локальный файл
-读论文 /путь/к/статье.pdf
-
-# Одна статья — arXiv
 read this paper https://arxiv.org/abs/2604.18559
-
-# Пакетная обработка — Paper Alert
-Paper Alert:
-1. Allosteric Switches https://www.nature.com/articles/s41587-026-03081-9
-2. ConforNets https://arxiv.org/abs/2604.18559
-3. trRosettaRNA2 https://doi.org/10.1038/s42256-026-01223-x
 ```
 
-Skill автоматически: получит/проверит PDF → определит область → выберет режим → проанализирует → заархивирует
+Вот и всё. Skill автоматически определит область, предложит режим и сделает остальное.
 
 ## 📝 Пример архивного вывода
 
@@ -120,6 +141,16 @@ rating: "5"
 | `ARCHIVE_BASE` | `~/obsidian/papers` | Корень архива Obsidian |
 | `EXTRACT_SCRIPT` | `scripts/extract.sh` | Путь к вспомогательному скрипту извлечения |
 
+## 🤝 Участие в разработке
+
+Нашли баг? Хотите добавить чеклист для новой области? PR приветствуются.
+
+1. Сделайте Fork этого репозитория
+2. Создайте ветку (`git checkout -b feature/my-feature`)
+3. Сделайте commit (`git commit -m 'Add my feature'`)
+4. Сделайте push (`git push origin feature/my-feature`)
+5. Откройте Pull Request
+
 ## 📄 Лицензия
 
 MIT License — см. [LICENSE](../LICENSE).
@@ -128,7 +159,7 @@ MIT License — см. [LICENSE](../LICENSE).
 
 - [MinerU](https://github.com/opendatalab/MinerU) — движок извлечения PDF
 - [Hermes Agent](https://github.com/henvic/hermes) — фреймворк агентов
-- Создано для исследователей, у которых слишком много статей для чтения
+- Каждому исследователю, у которого сейчас открыто 50 вкладок с непрочитанными статьями
 
 <div align="center">
 Сделано с ❤️ для исследователей, которые читают слишком много статей

@@ -60,37 +60,58 @@
 
 ## 🚀 インストール
 
+### 方法1：Git Clone（推奨）
+
 ```bash
-# Hermes skills ディレクトリにクローン
 cd ~/.hermes/skills/
 git clone https://github.com/Shizukuyu0207/paper-reader.git
 ```
 
-または手動で `paper-reader/` フォルダを `~/.hermes/skills/paper-reader/` にコピー。
+### 方法2：「ズボラな研究者」メソッド
+
+ターミナルなんて触りたくない？このリポジトリの URL を Hermes Agent に投げて、以下をコピペするだけ：
+
+```
+この skill をインストールして：https://github.com/Shizukuyu0207/paper-reader
+
+~/.hermes/skills/paper-reader/ に clone して。
+MinerU がインストール済みか確認して（which mineru）、なければスキップして教えて。
+終わったらインストール完了を報告して、この skill で何ができるか紹介して。
+```
+
+Agent が全部やってくれます。お茶でもどうぞ。🍵
+
+### 方法3：手動インストール
+
+ZIP をダウンロードして `~/.hermes/skills/paper-reader/` に展開。
 
 ### 前提条件
 
-- [MinerU](https://github.com/opendatalab/MinerU) — PDF 抽出エンジン
-- [Hermes Agent](https://github.com/henvic/hermes) — エージェントフレームワーク
-- Obsidian ボールト（オプション、アーカイブノート用）
+| 依存関係 | 必須 | インストール |
+|----------|------|-------------|
+| [Hermes Agent](https://github.com/henvic/hermes) | ✅ 必須 | Hermes ドキュメント参照 |
+| [MinerU](https://github.com/opendatalab/MinerU) | ✅ 必須 | `pip install mineru` または README 参照 |
+| Obsidian | オプション | アーカイブノート用 |
 
-## 📋 使い方
+## 📋 クイックスタート
+
+```bash
+# 1. インストール
+cd ~/.hermes/skills/ && git clone https://github.com/Shizukuyu0207/paper-reader.git
+
+# 2. 確認
+ls paper-reader/SKILL.md  # 存在するはず
+
+# 3. 使う（Hermes のチャットで）
+```
+
+Hermes のチャットで：
 
 ```
-# 単一論文 — ローカルファイル
-読論文 /path/to/paper.pdf
-
-# 単一論文 — arXiv
 read this paper https://arxiv.org/abs/2604.18559
-
-# 一括 — Paper Alert
-Paper Alert:
-1. Allosteric Switches https://www.nature.com/articles/s41587-026-03081-9
-2. ConforNets https://arxiv.org/abs/2604.18559
-3. trRosettaRNA2 https://doi.org/10.1038/s42256-026-01223-x
 ```
 
-Skill が自動で：PDF の取得/検証 → 分野検出 → モード選択 → 分析 → アーカイブ
+これだけ。Skill が自動的に分野を検出し、モードを選び、残りを処理します。
 
 ## 📝 アーカイブ出力例
 
@@ -120,6 +141,16 @@ rating: "5"
 | `ARCHIVE_BASE` | `~/obsidian/papers` | Obsidian アーカイブルート |
 | `EXTRACT_SCRIPT` | `scripts/extract.sh` | 抽出ヘルパースクリプトパス |
 
+## 🤝 コントリビュート
+
+バグを見つけた？新しい分野チェックリストを追加したい？PR 大歓迎です。
+
+1. このリポジトリを Fork
+2. ブランチを作成 (`git checkout -b feature/my-feature`)
+3. コミット (`git commit -m 'Add my feature'`)
+4. プッシュ (`git push origin feature/my-feature`)
+5. Pull Request を作成
+
 ## 📄 ライセンス
 
 MIT License — [LICENSE](../LICENSE) を参照。
@@ -128,7 +159,7 @@ MIT License — [LICENSE](../LICENSE) を参照。
 
 - [MinerU](https://github.com/opendatalab/MinerU) — PDF 抽出エンジン
 - [Hermes Agent](https://github.com/henvic/hermes) — エージェントフレームワーク
-- 論文が多すぎて読みきれない研究者のために
+- ブラウザに 50 個の未読論文タブを開いているすべての研究者に敬意を込めて
 
 <div align="center">
 論文が多すぎて読みきれない研究者のために ❤️

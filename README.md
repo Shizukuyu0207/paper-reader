@@ -51,8 +51,6 @@ Process multiple papers simultaneously. Handles mixed sources:
 
 ## 🗂️ Domain Checklists
 
-Each domain has specialized analysis criteria:
-
 | Domain | Key Analysis Points |
 |--------|-------------------|
 | 🧬 **Molecular Dynamics** | Force fields, simulation parameters, RMSD/RMSF, free energy methods, trajectory analysis |
@@ -63,37 +61,58 @@ Each domain has specialized analysis criteria:
 
 ## 🚀 Installation
 
+### Option 1: Git Clone (Recommended)
+
 ```bash
-# Clone into your Hermes skills directory
 cd ~/.hermes/skills/
 git clone https://github.com/Shizukuyu0207/paper-reader.git
 ```
 
-Or manually copy the `paper-reader/` folder to `~/.hermes/skills/paper-reader/`.
+### Option 2: The "Lazy Researcher" Method
+
+Don't want to touch the terminal? Just throw this repo URL at your Hermes Agent and paste this:
+
+```
+安装这个 skill：https://github.com/Shizukuyu0207/paper-reader
+
+把它 clone 到 ~/.hermes/skills/paper-reader/，
+确保 MinerU 已安装（which mineru），如果没有就跳过这一步提醒我。
+clone 完成后告诉我安装好了，顺便介绍一下它能干什么。
+```
+
+Your agent will handle the rest. You're welcome. 🍵
+
+### Option 3: Manual
+
+Download this repo as ZIP, extract to `~/.hermes/skills/paper-reader/`.
 
 ### Prerequisites
 
-- [MinerU](https://github.com/opendatalab/MinerU) — PDF extraction engine
-- [Hermes Agent](https://github.com/henvic/hermes) — Agent framework
-- Obsidian vault (optional, for archive notes)
+| Dependency | Required | Install |
+|-----------|----------|---------|
+| [Hermes Agent](https://github.com/henvic/hermes) | ✅ Yes | See Hermes docs |
+| [MinerU](https://github.com/opendatalab/MinerU) | ✅ Yes | `pip install mineru` or see their README |
+| Obsidian | Optional | For archive notes |
 
-## 📋 Usage
+## 📋 Quick Start
+
+```bash
+# 1. Install
+cd ~/.hermes/skills/ && git clone https://github.com/Shizukuyu0207/paper-reader.git
+
+# 2. Verify
+ls paper-reader/SKILL.md  # should exist
+
+# 3. Use (in Hermes chat)
+```
+
+Then in your Hermes conversation:
 
 ```
-# Single paper — local file
-读论文 /path/to/paper.pdf
-
-# Single paper — arXiv
 read this paper https://arxiv.org/abs/2604.18559
-
-# Batch — Paper Alert
-Paper Alert:
-1. Allosteric Switches https://www.nature.com/articles/s41587-026-03081-9
-2. ConforNets https://arxiv.org/abs/2604.18559
-3. trRosettaRNA2 https://doi.org/10.1038/s42256-026-01223-x
 ```
 
-The skill will: fetch/verify PDF → detect domain → select mode → analyze → archive
+That's it. The skill will auto-detect domain, ask for mode, and do the rest.
 
 ## 📁 Directory Structure
 
@@ -155,6 +174,16 @@ Followed by structured sections: 基本信息 · 研究问题 · 方法 · 核�
 | `ARCHIVE_BASE` | `~/obsidian/papers` | Obsidian vault archive root |
 | `EXTRACT_SCRIPT` | `scripts/extract.sh` | Extraction helper script |
 
+## 🤝 Contributing
+
+Found a bug? Have a domain checklist to add? PRs welcome.
+
+1. Fork this repo
+2. Create your branch (`git checkout -b feature/my-feature`)
+3. Commit (`git commit -m 'Add my feature'`)
+4. Push (`git push origin feature/my-feature`)
+5. Open a Pull Request
+
 ## 📄 License
 
 MIT License — see [LICENSE](LICENSE).
@@ -163,7 +192,7 @@ MIT License — see [LICENSE](LICENSE).
 
 - [MinerU](https://github.com/opendatalab/MinerU) — PDF extraction engine
 - [Hermes Agent](https://github.com/henvic/hermes) — Agent framework
-- Built for researchers in molecular dynamics, medicine, AI, and bioinformatics
+- Every researcher who has 50 tabs of unread papers open right now
 
 <div align="center">
 Made with ❤️ for researchers who read too many papers

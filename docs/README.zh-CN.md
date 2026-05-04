@@ -60,37 +60,58 @@
 
 ## 🚀 安装
 
+### 方式一：Git Clone（推荐）
+
 ```bash
-# 克隆到 Hermes skills 目录
 cd ~/.hermes/skills/
 git clone https://github.com/Shizukuyu0207/paper-reader.git
 ```
 
-或手动将 `paper-reader/` 文件夹复制到 `~/.hermes/skills/paper-reader/`。
+### 方式二：「懒人科研」法
+
+不想碰终端？直接把这个仓库链接甩给你的 Hermes Agent，然后复制粘贴：
+
+```
+安装这个 skill：https://github.com/Shizukuyu0207/paper-reader
+
+把它 clone 到 ~/.hermes/skills/paper-reader/，
+确保 MinerU 已安装（which mineru），如果没有就跳过这一步提醒我。
+clone 完成后告诉我安装好了，顺便介绍一下它能干什么。
+```
+
+你的 Agent 会搞定剩下的事。喝茶去吧。🍵
+
+### 方式三：手动安装
+
+下载 ZIP 包，解压到 `~/.hermes/skills/paper-reader/`。
 
 ### 前置依赖
 
-- [MinerU](https://github.com/opendatalab/MinerU) — PDF 提取引擎
-- [Hermes Agent](https://github.com/henvic/hermes) — Agent 框架
-- Obsidian 知识库（可选，用于归档笔记）
+| 依赖 | 必须 | 安装方式 |
+|------|------|---------|
+| [Hermes Agent](https://github.com/henvic/hermes) | ✅ 必须 | 参见 Hermes 文档 |
+| [MinerU](https://github.com/opendatalab/MinerU) | ✅ 必须 | `pip install mineru` 或参见其 README |
+| Obsidian | 可选 | 用于归档笔记 |
 
-## 📋 使用方法
+## 📋 快速开始
+
+```bash
+# 1. 安装
+cd ~/.hermes/skills/ && git clone https://github.com/Shizukuyu0207/paper-reader.git
+
+# 2. 验证
+ls paper-reader/SKILL.md  # 应该存在
+
+# 3. 使用（在 Hermes 对话中）
+```
+
+然后在 Hermes 对话中：
 
 ```
-# 单篇论文 — 本地文件
-读论文 /path/to/paper.pdf
-
-# 单篇论文 — arXiv
 read this paper https://arxiv.org/abs/2604.18559
-
-# 批量 — Paper Alert
-Paper Alert:
-1. Allosteric Switches https://www.nature.com/articles/s41587-026-03081-9
-2. ConforNets https://arxiv.org/abs/2604.18559
-3. trRosettaRNA2 https://doi.org/10.1038/s42256-026-01223-x
 ```
 
-Skill 将自动：获取/验证 PDF → 检测领域 → 选择模式 → 分析 → 归档
+就这样。Skill 会自动检测领域、询问模式、完成剩余工作。
 
 ## 📝 归档输出示例
 
@@ -123,6 +144,16 @@ rating: "5"
 | `ARCHIVE_BASE` | `~/obsidian/papers` | Obsidian 归档根目录 |
 | `EXTRACT_SCRIPT` | `scripts/extract.sh` | 提取辅助脚本路径 |
 
+## 🤝 贡献
+
+发现 Bug？想添加新的领域检查清单？欢迎 PR。
+
+1. Fork 本仓库
+2. 创建分支 (`git checkout -b feature/my-feature`)
+3. 提交 (`git commit -m 'Add my feature'`)
+4. 推送 (`git push origin feature/my-feature`)
+5. 发起 Pull Request
+
 ## 📄 许可证
 
 MIT License — 详见 [LICENSE](../LICENSE)。
@@ -131,7 +162,7 @@ MIT License — 详见 [LICENSE](../LICENSE)。
 
 - [MinerU](https://github.com/opendatalab/MinerU) — PDF 提取引擎
 - [Hermes Agent](https://github.com/henvic/hermes) — Agent 框架
-- 为论文太多读不完的科研工作者而建
+- 致敬每一位浏览器里开着 50 个未读论文标签的科研工作者
 
 <div align="center">
 为论文太多读不完的科研工作者而建 ❤️
