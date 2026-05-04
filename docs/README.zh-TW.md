@@ -2,13 +2,10 @@
 
 # 📄 Paper Reader
 
-**學術論文分析 — 多 Agent 相容**
+**學術論文分析 — Agent 無關管線**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](../LICENSE)
-[![Hermes](https://img.shields.io/badge/Hermes-Skill-purple.svg)](https://github.com/henvic/hermes)
-[![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-green.svg)](https://docs.anthropic.com/en/docs/claude-code)
-[![Codex](https://img.shields.io/badge/Codex-Compatible-blue.svg)](https://github.com/openai/codex)
-[![OpenCode](https://img.shields.io/badge/OpenCode-Compatible-orange.svg)](https://opencode.ai)
+[![MinerU](https://img.shields.io/badge/Powered%20by-MinerU-orange.svg)](https://github.com/opendatalab/MinerU)
 
 [English](../README.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [Español](README.es.md) · [Русский](README.ru.md)
 
@@ -18,29 +15,9 @@
 
 ## ✨ 概述
 
-Paper Reader 自動閱讀、分析和歸檔學術論文——智慧領域偵測 + Obsidian 筆記整合。
+自動閱讀、分析和歸檔學術論文——智慧領域偵測 + Obsidian 筆記整合。
 
-**相容 4 種 AI Agent**：Hermes（原生）、Claude Code、OpenAI Codex、OpenCode。
-
-## 🤖 多 Agent 適配
-
-| Agent | 適配檔案 | 安裝方式 | 狀態 |
-|-------|---------|---------|------|
-| **Hermes** | `SKILL.md`（原生） | `~/.hermes/skills/paper-reader/` | ✅ 完整支援 |
-| **Claude Code** | `adapters/claude-code/` | `~/.claude/commands/paper-reader.md` | ✅ 已測試 |
-| **Codex** | `adapters/codex/` | 專案 `AGENTS.md` | ✅ 已測試 |
-| **OpenCode** | `adapters/opencode/` | `opencode.json` agent 設定 | ✅ 已測試 |
-
-### 功能對比
-
-| 功能 | Hermes | Claude Code | Codex | OpenCode |
-|------|--------|-------------|-------|----------|
-| 3層獲取策略 | ✅ 內建 | ✅ bash | ✅ bash | ✅ bash |
-| 領域偵測（5領域） | ✅ 原生 | ✅ 提示詞 | ✅ 提示詞 | ✅ 提示詞 |
-| 深度精讀+歸檔 | ✅ | ✅ | ✅ | ✅ |
-| 批量並行 | ✅ 內建 | ⚠️ 手動 | ⚠️ 手動 | ⚠️ 手動 |
-| 圖片視覺分析 | ✅ 內建 | ✅ 內建 | ❌ | ❌ |
-| MinerU 整合 | ✅ 腳本 | ✅ bash | ✅ bash | ✅ bash |
+設計為 Agent 無關的管線，相容任意 Agent。適配檔案見 `adapters/`。
 
 ## 🏗️ 架構
 
@@ -49,40 +26,32 @@ Paper Reader 自動閱讀、分析和歸檔學術論文——智慧領域偵測 
 | 優先級 | 工具 | 速度 | 覆蓋 |
 |--------|------|------|------|
 | Tier 1 | Jina Reader | 1-2s | arXiv, bioRxiv, 大部分 Nature |
-| Tier 2 | Scrapling + Camoufox | 5-15s | Nature/Elsevier |
+| Tier 2 | Scrapling + Camoufox | 5-15s | Nature/Elsevier 補位 |
 | Tier 3 | web_search | 2-5s | 硬付費牆 |
 | 本地 | MinerU | ~2min/40p | 本地 PDF |
 
 ### 領域：🧬 分子動力學 | 🏥 醫學 | 🤖 AI/ML | 🔬 生物資訊學 | 💻 程式設計
 
-## 📊 案例：9 篇論文批量處理（2026年5月）
+### 模式：🔍 快速篩選 | 📖 深度精讀+歸檔 | 💬 互動問答 | 📦 批量處理
 
-| # | 論文 | 來源 | 方法 | 品質 |
-|---|------|------|------|------|
-| 1 | Allosteric Switches | Nature NBT | MinerU | ★★★★★ 全文+36圖 |
-| 2 | ConforNets | arXiv | MinerU | ★★★★★ 全文+75圖 |
-| 3-8 | 6篇付費/預印本 | 混合 | web_search | ★★☆☆☆ 僅元資料 |
-| 9 | lightning-boltz | GitHub | README | ★★☆☆☆ 倉庫資訊 |
+## 📊 案例：9 篇論文批量處理
 
-✅ 全文分析優秀 | ✅ 9篇6分鐘 | ⚠️ 付費論文缺方法細節
+✅ 全文論文 → 100+行深度歸檔。9篇6分鐘。領域全部正確分類。
+⚠️ 付費論文 → 元資料級筆記。ScienceDirect 仍為 Tier 3。
+改善：Jina Reader 整合後 4/7 篇元資料級升級為全文。
 
 ## ⚠️ 誠實的侷限性
 
 - **硬付費牆**（Cell, NEJM, JAMA）：需機構登入 → 手動下載 PDF
-- **Tier 3 論文**：歸檔筆記缺詳細方法和定量結果
-- 只獲取瀏覽器公開可見內容
+- **Tier 3 論文**：歸檔筆記缺方法和定量結果
+- 歸檔 ≠ 讀論文。只獲取瀏覽器公開可見內容。
 
 ## 🚀 安裝
 
 ```bash
-# Hermes (推薦)
-cd ~/.hermes/skills/ && git clone https://github.com/Shizukuyu0207/paper-reader.git
-
-# Claude Code
-mkdir -p ~/.claude/commands && cp paper-reader/adapters/claude-code/commands/paper-reader.md ~/.claude/commands/
-
-# Codex
-cp paper-reader/adapters/codex/AGENTS.md ./AGENTS.md
+git clone https://github.com/Shizukuyu0207/paper-reader.git
+# Hermes: cp -r paper-reader ~/.hermes/skills/
+# 其他 Agent: 見 adapters/
 ```
 
 ## 📄 許可證

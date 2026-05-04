@@ -2,13 +2,10 @@
 
 # 📄 Paper Reader
 
-**Анализ научных статей — Мульти-агентная совместимость**
+**Анализ научных статей — Агенто-независимый пайплайн**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](../LICENSE)
-[![Hermes](https://img.shields.io/badge/Hermes-Skill-purple.svg)](https://github.com/henvic/hermes)
-[![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-green.svg)](https://docs.anthropic.com/en/docs/claude-code)
-[![Codex](https://img.shields.io/badge/Codex-Compatible-blue.svg)](https://github.com/openai/codex)
-[![OpenCode](https://img.shields.io/badge/OpenCode-Compatible-orange.svg)](https://opencode.ai)
+[![MinerU](https://img.shields.io/badge/Powered%20by-MinerU-orange.svg)](https://github.com/opendatalab/MinerU)
 
 [English](../README.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [Español](README.es.md) · [Русский](README.ru.md)
 
@@ -18,27 +15,9 @@
 
 ## ✨ Обзор
 
-Paper Reader автоматически читает, анализирует и архивирует научные статьи с определением домена и интеграцией Obsidian.
+Автоматический анализ научных статей с определением домена и интеграцией Obsidian.
 
-**Совместим с 4 ИИ-агентами**: Hermes (встроенный), Claude Code, OpenAI Codex, OpenCode.
-
-## 🤖 Мульти-агентная поддержка
-
-| Агент | Адаптер | Установка | Статус |
-|-------|---------|-----------|--------|
-| **Hermes** | `SKILL.md` (встроенный) | `~/.hermes/skills/paper-reader/` | ✅ Полная поддержка |
-| **Claude Code** | `adapters/claude-code/` | `~/.claude/commands/paper-reader.md` | ✅ Протестирован |
-| **Codex** | `adapters/codex/` | `AGENTS.md` проекта | ✅ Протестирован |
-| **OpenCode** | `adapters/opencode/` | Конфиг агента `opencode.json` | ✅ Протестирован |
-
-### Сравнение функций
-
-| Функция | Hermes | Claude Code | Codex | OpenCode |
-|---------|--------|-------------|-------|----------|
-| 3 уровня получения | ✅ Встроено | ✅ bash | ✅ bash | ✅ bash |
-| Определение домена | ✅ Нативное | ✅ Промпт | ✅ Промпт | ✅ Промпт |
-| Пакетная обработка | ✅ Встроена | ⚠️ Вручную | ⚠️ Вручную | ⚠️ Вручную |
-| Визуальный анализ | ✅ Встроен | ✅ Встроен | ❌ | ❌ |
+Агенто-независимый пайплайн. Совместим с любым агентом. См. `adapters/`.
 
 ## 🏗️ Архитектура
 
@@ -53,22 +32,20 @@ Paper Reader автоматически читает, анализирует и 
 
 ### Домены: 🧬 Мол. динамика | 🏥 Медицина | 🤖 AI/ML | 🔬 Биоинформатика | 💻 Программирование
 
-## ⚠️ Честные ограничения
+## 📊 Кейс: Пакетная обработка 9 статей
 
-- **Жёсткие пейволлы** (Cell, NEJM, JAMA): Требуют институциональный доступ → скачайте PDF вручную
-- Получаем только публично доступный контент браузера.
+✅ Полный текст → архив 100+ строк. 9 статей за 6 мин.
+⚠️ Пейволл → только метаданные. Elsevier — Уровень 3.
+
+## ⚠️ Ограничения
+
+- **Жёсткие пейволлы** (Cell, NEJM, JAMA): Требуют институциональный доступ
+- Получаем только публично доступный контент
 
 ## 🚀 Установка
 
 ```bash
-# Hermes (рекомендуется)
-cd ~/.hermes/skills/ && git clone https://github.com/Shizukuyu0207/paper-reader.git
-
-# Claude Code
-mkdir -p ~/.claude/commands && cp paper-reader/adapters/claude-code/commands/paper-reader.md ~/.claude/commands/
-
-# Codex
-cp paper-reader/adapters/codex/AGENTS.md ./AGENTS.md
+git clone https://github.com/Shizukuyu0207/paper-reader.git
 ```
 
 ## 📄 Лицензия
@@ -76,5 +53,5 @@ cp paper-reader/adapters/codex/AGENTS.md ./AGENTS.md
 MIT License — см. [LICENSE](../LICENSE).
 
 <div align="center">
-Создано с ❤️ для исследователей, у которых слишком много непрочитанных статей
+Создано с ❤️ для исследователей с слишком большим количеством непрочитанных статей
 </div>
