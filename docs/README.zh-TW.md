@@ -2,7 +2,7 @@
 
 # 📄 Paper Reader
 
-**基於 MinerU 的學術論文分析 Hermes Agent Skill**
+**學術論文分析 Hermes Agent Skill — MinerU + Jina Reader + Scrapling**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](../LICENSE)
 [![Hermes Skill](https://img.shields.io/badge/Hermes-Skill-purple.svg)](https://github.com/henvic/hermes)
@@ -16,9 +16,7 @@
 
 ## ✨ 概述
 
-[Hermes Agent](https://github.com/henvic/hermes) 的學術論文閱讀分析 Skill。支援 PDF 全文提取、智慧領域偵測、深度結構化分析，並自動歸檔到 Obsidian 知識庫。
-
-無論是單篇 arXiv 預印本的快速篩選，還是 10+ 篇跨出版商論文的批次處理，Paper Reader 都能自動完成提取、分類、分析和歸檔。
+[Hermes Agent](https://github.com/henvic/hermes) 的學術論文閱讀分析 Skill。支援 3 層智慧獲取、自動領域偵測、深度結構化分析，並自動歸檔到 Obsidian 知識庫。
 
 ## 🎯 核心特性
 
@@ -26,37 +24,50 @@
 |------|------|
 | 🧠 **自動領域偵測** | 5 大領域：分子動力學、醫學、AI/ML、生物資訊學、程式設計 |
 | 📊 **3 種閱讀模式** | 快速篩選（3 分鐘）· 深度精讀（全文分析）· 問答（互動式）|
-| ⚡ **批次處理** | 平行下載 + MinerU 提取 + 平行分析，支援 Paper Alert |
+| ⚡ **3 層內容獲取** | Jina Reader → Scrapling 隱身瀏覽器 → web_search 回退 |
 | 📝 **Obsidian 歸檔** | YAML frontmatter + 結構化 Markdown 筆記 |
 | 🔍 **圖表視覺分析** | AI 驅動的關鍵圖表描述與分析 |
-| 🔓 **付費牆處理** | Nature/Elsevier/bioRxiv 付費論文自動回退到 web_search |
+| 📦 **批次處理** | 平行獲取 + 平行分析，支援 Paper Alert |
 
-## 📖 閱讀模式
+## 🔗 內容獲取 — 3 層策略
 
-### 🔍 快速篩選
-3 分鐘概覽，判斷論文是否值得精讀。提取標題、摘要、關鍵發現和意義。不建立歸檔。
+沒有魔法——只有分層的降級策略和誠實的取捨。
 
-### 📖 深度精讀
-基於領域專用的分析檢查清單進行全文結構化分析。產生完整的 Obsidian 歸檔筆記，包含方法解析、定量結果、限制性和研究啟示。
+| 層級 | 工具 | 速度 | 輸出 | 適用於 |
+|------|------|------|------|--------|
+| **第1層** | [Jina Reader](https://github.com/jina-ai/reader) | 1-2s | Markdown | arXiv, bioRxiv, 開放取用, 多數 Nature 文章 |
+| **第2層** | [Scrapling](https://github.com/D4Vinci/Scrapling) + Camoufox | 5-15s | HTML 文字 | 第1層失敗, Nature/Elsevier 部分內容 |
+| **第3層** | web_search | 2-5s | 僅元資料 | 硬付費牆（Cell, NEJM, Lancet） |
 
-### 💬 問答模式
-互動式問答。可針對論文內容、圖表或方法論提問。可選儲存問答記錄。
+### 實測效能（2026年5月真實資料）
 
-### 📦 批次模式（Paper Alert）
-同時處理多篇論文，支援混合來源：
-- **arXiv PDF** → 直接下載 + MinerU 全文提取
-- **付費論文**（Nature、Elsevier、bioRxiv）→ web_search 元資料回退
-- **GitHub 儲存庫** → README 分析
+| 來源 | 層級 | 結果 | 耗時 | 內容量 |
+|------|------|------|------|--------|
+| arXiv PDF | 第1層 | ✅ 全文 | 0.8s | 所有章節 |
+| bioRxiv PDF | 第1層 | ✅ 全文 | 0.8s | 所有章節 |
+| Nature Biotechnology | 第1層 | ✅ 全文 | 1.0s | 117K字元 |
+| Nature Machine Intelligence | 第1→2層 | ✅ 全文 | 6.3s | Jina部分→Scrapling補全 |
+| Elsevier/ScienceDirect | 第3層 | ⚠️ 元資料 | 3s | 僅摘要+引用 |
 
-## 🗂️ 領域分析清單
+## ⚠️ 誠實的限制
 
-| 領域 | 關鍵分析點 |
-|------|-----------|
-| 🧬 **分子動力學** | 力場、模擬參數、RMSD/RMSF、自由能方法、軌跡分析 |
-| 🏥 **醫學** | 研究設計、佇列資訊、統計方法、臨床結果、風險比 |
-| 🤖 **AI / ML** | 架構細節、訓練資料、基準測試、SOTA 對比、計算資源 |
-| 🔬 **生物資訊學** | 分析管線、統計檢定、基因體組裝、差異表達、富集分析 |
-| 💻 **程式設計** | 演算法複雜度、系統設計、實作細節、效能基準 |
+這個工具有用但**並非萬能**。
+
+### 無法突破的
+
+| 場景 | 現實 | 解決方案 |
+|------|------|---------|
+| **硬付費牆**（Cell, NEJM, JAMA） | 需要機構登入或個人訂閱 | 使用學校/研究所VPN，手動下載PDF後作為本地檔案提供 |
+| **機構認證**（SSO, Shibboleth） | 登入大學門戶超出 Skill 範圍 | 手動下載PDF，再提供給 Paper Reader |
+| **剛發表的文章** | 部分需數天/數週才被收錄 | 等待預印本發布或透過機構取得 |
+| **補充材料** | 通常單獨託管 | 單獨提供補充材料檔案 |
+
+### 法律與倫理聲明
+
+- 我們獲取的是**瀏覽器裡公開可見的內容**。如果你需要登入才能看到——你應該自己登入。
+- 開放取用論文：出版商明確允許獲取。
+- 付費內容：不嘗試繞過認證或突破付費牆，回退到公開元資料。
+- 速率限制：Jina Reader 免費層 20 RPM，不會轟炸出版商伺服器。
 
 ## 🚀 安裝
 
@@ -69,8 +80,6 @@ git clone https://github.com/Shizukuyu0207/paper-reader.git
 
 ### 方式二：「懶人科研」法
 
-不想碰終端機？直接把這個倉庫連結甩給你的 Hermes Agent，然後複製貼上：
-
 ```
 安裝這個 skill：https://github.com/Shizukuyu0207/paper-reader
 
@@ -79,58 +88,17 @@ git clone https://github.com/Shizukuyu0207/paper-reader.git
 clone 完成後告訴我安裝好了，順便介紹一下它能幹什麼。
 ```
 
-你的 Agent 會搞定剩下的事。喝茶去吧。🍵
-
-### 方式三：手動安裝
-
-下載 ZIP 包，解壓到 `~/.hermes/skills/paper-reader/`。
+喝茶去吧。🍵
 
 ### 前置依賴
 
 | 依賴 | 必要 | 安裝方式 |
 |------|------|---------|
 | [Hermes Agent](https://github.com/henvic/hermes) | ✅ 必要 | 參見 Hermes 文件 |
-| [MinerU](https://github.com/opendatalab/MinerU) | ✅ 必要 | `pip install mineru` 或參見其 README |
+| [MinerU](https://github.com/opendatalab/MinerU) | ✅ 必要 | `pip install mineru` |
+| [Jina Reader](https://github.com/jina-ai/reader) | 內建 | 使用 `r.jina.ai` API |
+| [Scrapling](https://github.com/D4Vinci/Scrapling) | 推薦 | `pip install scrapling camoufox && python -m camoufox fetch` |
 | Obsidian | 可選 | 用於歸檔筆記 |
-
-## 📋 快速開始
-
-```bash
-# 1. 安裝
-cd ~/.hermes/skills/ && git clone https://github.com/Shizukuyu0207/paper-reader.git
-
-# 2. 驗證
-ls paper-reader/SKILL.md  # 應該存在
-
-# 3. 使用（在 Hermes 對話中）
-```
-
-然後在 Hermes 對話中：
-
-```
-read this paper https://arxiv.org/abs/2604.18559
-```
-
-就這樣。Skill 會自動偵測領域、詢問模式、完成剩餘工作。
-
-## 📝 歸檔輸出範例
-
-筆記儲存到 `~/obsidian/papers/{domain}/`，包含完整 YAML frontmatter：
-
-```yaml
----
-title: "Artificial allosteric protein switches with ML-designed receptors"
-authors: ["Zhong Guo", "David Baker"]
-year: 2026
-journal: "Nature Biotechnology"
-doi: "10.1038/s41587-026-03081-9"
-domain: "ai"
-tags: [paper/ai, allosteric-switch, biosensor, protein-design]
-rating: "5"
----
-```
-
-後接結構化章節：基本資訊 · 研究問題 · 方法 · 核心結果 · 限制性 · 研究啟示 · 引用網路
 
 ## ⚙️ 設定
 
@@ -139,17 +107,11 @@ rating: "5"
 | `MINERU` | MinerU 二進位路徑 | MinerU 可執行檔路徑 |
 | `WORK_BASE` | `/tmp/paper-reader` | 暫存工作目錄 |
 | `ARCHIVE_BASE` | `~/obsidian/papers` | Obsidian 歸檔根目錄 |
-| `EXTRACT_SCRIPT` | `scripts/extract.sh` | 提取輔助指令碼路徑 |
+| `JINA_READER` | `https://r.jina.ai` | Jina Reader API 端點 |
 
 ## 🤝 貢獻
 
 發現 Bug？想新增新的領域檢查清單？歡迎 PR。
-
-1. Fork 本倉庫
-2. 建立分支 (`git checkout -b feature/my-feature`)
-3. 提交 (`git commit -m 'Add my feature'`)
-4. 推送 (`git push origin feature/my-feature`)
-5. 發起 Pull Request
 
 ## 📄 授權
 
@@ -158,6 +120,8 @@ MIT License — 詳見 [LICENSE](../LICENSE)。
 ## 🙏 致謝
 
 - [MinerU](https://github.com/opendatalab/MinerU) — PDF 提取引擎
+- [Jina Reader](https://github.com/jina-ai/reader) — URL 轉 Markdown
+- [Scrapling](https://github.com/D4Vinci/Scrapling) — 隱身瀏覽器抓取
 - [Hermes Agent](https://github.com/henvic/hermes) — Agent 框架
 - 致敬每一位瀏覽器裡開著 50 個未讀論文分頁的科研工作者
 

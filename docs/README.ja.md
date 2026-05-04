@@ -2,7 +2,7 @@
 
 # 📄 Paper Reader
 
-**MinerU を活用した学術論文分析 Hermes Agent Skill**
+**学術論文分析 Hermes Agent Skill — MinerU + Jina Reader + Scrapling**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](../LICENSE)
 [![Hermes Skill](https://img.shields.io/badge/Hermes-Skill-purple.svg)](https://github.com/henvic/hermes)
@@ -16,9 +16,7 @@
 
 ## ✨ 概要
 
-[Hermes Agent](https://github.com/henvic/hermes) 用の学術論文読解・分析 Skill。PDF 全文抽出、インテリジェントな分野検出、深い構造化分析をサポートし、Obsidian ボールトに自動アーカイブします。
-
-単一の arXiv プレプリントのスクリーニングから、10本以上の複数出版社の論文の一括処理まで、Paper Reader が抽出・分類・分析・アーカイブを自動で行います。
+[Hermes Agent](https://github.com/henvic/hermes) 用の学術論文読解・分析 Skill。3段階のコンテンツ取得、インテリジェントな分野検出、Obsidian ボールトへの自動アーカイブをサポートします。
 
 ## 🎯 主要機能
 
@@ -26,37 +24,50 @@
 |------|------|
 | 🧠 **自動分野検出** | 5分野：分子動力学、医学、AI/ML、バイオインフォマティクス、プログラミング |
 | 📊 **3つの読解モード** | クイックスキャン（3分）· 深い読解（全文分析）· Q&A（対話型）|
-| ⚡ **一括処理** | 並列ダウンロード + MinerU 抽出 + 並列分析、Paper Alert 対応 |
+| ⚡ **3段階コンテンツ取得** | Jina Reader → Scrapling ステルスブラウザ → web_search フォールバック |
 | 📝 **Obsidian アーカイブ** | YAML frontmatter + 構造化 Markdown ノート |
 | 🔍 **図表の視覚分析** | AI による主要図表の記述と分析 |
-| 🔓 **ペイウォール対応** | Nature/Elsevier/bioRxiv の有料論文は web_search に自動フォールバック |
+| 📦 **一括処理** | 並列取得 + 並列分析、Paper Alert 対応 |
 
-## 📖 読解モード
+## 🔗 コンテンツ取得 — 3段階戦略
 
-### 🔍 クイックスキャン
-3分で概要を把握し、精読する価値があるか判断。タイトル、要約、主要な発見、意義を抽出。アーカイブは作成されません。
+魔法はありません — レイヤー化されたフォールバックと正直なトレードオフだけです。
 
-### 📖 深い読解
-分野固有の分析チェックリストに基づく全文構造化分析。手法の詳細、定量的結果、限界、研究への示唆を含む包括的な Obsidian アーカイブノートを生成します。
+| 段階 | ツール | 速度 | 出力 | 対象 |
+|------|--------|------|------|------|
+| **第1段階** | [Jina Reader](https://github.com/jina-ai/reader) | 1-2秒 | Markdown | arXiv, bioRxiv, オープンアクセス, ほとんどの Nature 論文 |
+| **第2段階** | [Scrapling](https://github.com/D4Vinci/Scrapling) + Camoufox | 5-15秒 | HTML テキスト | 第1段階失敗時, Nature/Elsevier の部分コンテンツ |
+| **第3段階** | web_search | 2-5秒 | メタデータのみ | ハードペイウォール（Cell, NEJM, Lancet） |
 
-### 💬 Q&A モード
-対話型の質疑応答。論文の内容、図表、方法論について自由に質問できます。Q&A ログの保存も可能です。
+### ベンチマーク（2026年5月実測データ）
 
-### 📦 一括モード（Paper Alert）
-複数の論文を同時処理。複数ソースに対応：
-- **arXiv PDF** → 直接ダウンロード + MinerU 全文抽出
-- **有料論文**（Nature、Elsevier、bioRxiv）→ web_search メタデータフォールバック
-- **GitHub リポジトリ** → README 分析
+| ソース | 段階 | 結果 | 時間 | コンテンツ量 |
+|--------|------|------|------|-------------|
+| arXiv PDF | 第1段階 | ✅ 全文 | 0.8秒 | 全セクション |
+| bioRxiv PDF | 第1段階 | ✅ 全文 | 0.8秒 | 全セクション |
+| Nature Biotechnology | 第1段階 | ✅ 全文 | 1.0秒 | 117K文字 |
+| Nature Machine Intelligence | 第1→2段階 | ✅ 全文 | 6.3秒 | Jina部分→Scrapling補完 |
+| Elsevier/ScienceDirect | 第3段階 | ⚠️ メタデータ | 3秒 | 要約+引用のみ |
 
-## 🗂️ 分野別分析チェックリスト
+## ⚠️ 正直な限界
 
-| 分野 | 主な分析ポイント |
-|------|----------------|
-| 🧬 **分子動力学** | 力場、シミュレーションパラメータ、RMSD/RMSF、自由エネルギー法、軌跡分析 |
-| 🏥 **医学** | 研究デザイン、コホート情報、統計手法、臨床アウトカム、ハザード比 |
-| 🤖 **AI / ML** | アーキテクチャ詳細、訓練データ、ベンチマーク、SOTA 比較、計算リソース |
-| 🔬 **バイオインフォマティクス** | パイプラインツール、統計検定、ゲノムアセンブリ、発現差異、エンリッチメント分析 |
-| 💻 **プログラミング** | アルゴリズム複雑度、システム設計、実装詳細、パフォーマンスベンチマーク |
+このツールは有用ですが、**万能ではありません**。
+
+### 突破できないもの
+
+| シナリオ | 現実 | 回避策 |
+|----------|------|--------|
+| **ハードペイウォール**（Cell, NEJM, JAMA） | 機関ログインまたは個人購読が必要 | 大学/研究所のVPNを使用、PDFを手動ダウンロードしてローカルファイルとして提供 |
+| **機関認証**（SSO, Shibboleth） | 大学ポータルへのログインは Skill の範囲外 | 手動でPDFをダウンロードして Paper Reader に提供 |
+| **出版直後の論文** | インデックスされるまで数日〜数週間かかる場合がある | プレプリントの公開を待つか、機関経由でアクセス |
+| **補足資料** | 通常は別ホスト | 補足ファイルを個別に提供 |
+
+### 法的・倫理的考慮事項
+
+- ブラウザで**公開されているコンテンツのみ**を取得します。ログインが必要なものは、自分でログインしてください。
+- オープンアクセス論文：出版社が明示的に取得を許可。
+- ペイウォールコンテンツ：認証の回避やペイウォールの突破は試みません。公開メタデータにフォールバック。
+- レート制限：Jina Reader 無料枠 20 RPM。出版社サーバーを攻撃しません。
 
 ## 🚀 インストール
 
@@ -69,68 +80,25 @@ git clone https://github.com/Shizukuyu0207/paper-reader.git
 
 ### 方法2：「ズボラな研究者」メソッド
 
-ターミナルなんて触りたくない？このリポジトリの URL を Hermes Agent に投げて、以下をコピペするだけ：
-
 ```
 この skill をインストールして：https://github.com/Shizukuyu0207/paper-reader
 
 ~/.hermes/skills/paper-reader/ に clone して。
-MinerU がインストール済みか確認して（which mineru）、なければスキップして教えて。
+MinerU がインストール済みか確認して、なければスキップして教えて。
 終わったらインストール完了を報告して、この skill で何ができるか紹介して。
 ```
 
-Agent が全部やってくれます。お茶でもどうぞ。🍵
-
-### 方法3：手動インストール
-
-ZIP をダウンロードして `~/.hermes/skills/paper-reader/` に展開。
+お茶でもどうぞ。🍵
 
 ### 前提条件
 
 | 依存関係 | 必須 | インストール |
 |----------|------|-------------|
 | [Hermes Agent](https://github.com/henvic/hermes) | ✅ 必須 | Hermes ドキュメント参照 |
-| [MinerU](https://github.com/opendatalab/MinerU) | ✅ 必須 | `pip install mineru` または README 参照 |
+| [MinerU](https://github.com/opendatalab/MinerU) | ✅ 必須 | `pip install mineru` |
+| [Jina Reader](https://github.com/jina-ai/reader) | 組み込み | `r.jina.ai` API 使用、インストール不要 |
+| [Scrapling](https://github.com/D4Vinci/Scrapling) | 推奨 | `pip install scrapling camoufox && python -m camoufox fetch` |
 | Obsidian | オプション | アーカイブノート用 |
-
-## 📋 クイックスタート
-
-```bash
-# 1. インストール
-cd ~/.hermes/skills/ && git clone https://github.com/Shizukuyu0207/paper-reader.git
-
-# 2. 確認
-ls paper-reader/SKILL.md  # 存在するはず
-
-# 3. 使う（Hermes のチャットで）
-```
-
-Hermes のチャットで：
-
-```
-read this paper https://arxiv.org/abs/2604.18559
-```
-
-これだけ。Skill が自動的に分野を検出し、モードを選び、残りを処理します。
-
-## 📝 アーカイブ出力例
-
-ノートは `~/obsidian/papers/{domain}/` に YAML frontmatter 付きで保存：
-
-```yaml
----
-title: "Artificial allosteric protein switches with ML-designed receptors"
-authors: ["Zhong Guo", "David Baker"]
-year: 2026
-journal: "Nature Biotechnology"
-doi: "10.1038/s41587-026-03081-9"
-domain: "ai"
-tags: [paper/ai, allosteric-switch, biosensor, protein-design]
-rating: "5"
----
-```
-
-構造化セクションが続きます：基本情報 · 研究問題 · 方法 · 主要結果 · 限界 · 研究への示唆 · 引用ネットワーク
 
 ## ⚙️ 設定
 
@@ -139,17 +107,11 @@ rating: "5"
 | `MINERU` | MinerU バイナリパス | MinerU 実行ファイルのパス |
 | `WORK_BASE` | `/tmp/paper-reader` | 一時作業ディレクトリ |
 | `ARCHIVE_BASE` | `~/obsidian/papers` | Obsidian アーカイブルート |
-| `EXTRACT_SCRIPT` | `scripts/extract.sh` | 抽出ヘルパースクリプトパス |
+| `JINA_READER` | `https://r.jina.ai` | Jina Reader API エンドポイント |
 
 ## 🤝 コントリビュート
 
-バグを見つけた？新しい分野チェックリストを追加したい？PR 大歓迎です。
-
-1. このリポジトリを Fork
-2. ブランチを作成 (`git checkout -b feature/my-feature`)
-3. コミット (`git commit -m 'Add my feature'`)
-4. プッシュ (`git push origin feature/my-feature`)
-5. Pull Request を作成
+バグを見つけた？新しい分野チェックリストを追加したい？PR 大歓迎。
 
 ## 📄 ライセンス
 
@@ -158,6 +120,8 @@ MIT License — [LICENSE](../LICENSE) を参照。
 ## 🙏 謝辞
 
 - [MinerU](https://github.com/opendatalab/MinerU) — PDF 抽出エンジン
+- [Jina Reader](https://github.com/jina-ai/reader) — URL → Markdown 変換
+- [Scrapling](https://github.com/D4Vinci/Scrapling) — ステルスブラウザフェッチ + Camoufox
 - [Hermes Agent](https://github.com/henvic/hermes) — エージェントフレームワーク
 - ブラウザに 50 個の未読論文タブを開いているすべての研究者に敬意を込めて
 

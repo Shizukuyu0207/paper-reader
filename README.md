@@ -1,9 +1,8 @@
-\
 <div align="center">
 
 # 📄 Paper Reader
 
-**MinerU-Powered Academic Paper Analysis for Hermes Agent**
+**Academic Paper Analysis for Hermes Agent — MinerU + Jina Reader + Scrapling**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Hermes Skill](https://img.shields.io/badge/Hermes-Skill-purple.svg)](https://github.com/henvic/hermes)
@@ -19,7 +18,7 @@
 
 An [Hermes Agent](https://github.com/henvic/hermes) skill that reads, analyzes, and archives academic papers (PDF) with intelligent domain detection and structured Obsidian vault integration.
 
-Whether you're scanning a single arXiv preprint or processing a batch of 10+ papers from different publishers, Paper Reader handles PDF extraction, domain classification, deep analysis, and archiving — all automatically.
+Whether you're scanning a single arXiv preprint or processing a batch of 10+ papers from different publishers, Paper Reader handles content acquisition, domain classification, deep analysis, and archiving — all automatically.
 
 ## 🎯 Key Features
 
@@ -27,10 +26,42 @@ Whether you're scanning a single arXiv preprint or processing a batch of 10+ pap
 |---------|-------------|
 | 🧠 **Auto Domain Detection** | Classifies papers into 5 domains: Molecular Dynamics, Medicine, AI/ML, Bioinformatics, Programming |
 | 📊 **3 Reading Modes** | Quick Scan (3 min) · Deep Read (full analysis) · Q&A (interactive) |
-| ⚡ **Batch Processing** | Parallel download + MinerU extraction + parallel analysis for Paper Alerts |
+| ⚡ **3-Tier Content Acquisition** | Jina Reader → Scrapling stealth browser → web_search fallback |
 | 📝 **Obsidian Archive** | YAML frontmatter + structured markdown notes in your vault |
 | 🔍 **Vision Analysis** | AI-powered figure descriptions and analysis |
-| 🔓 **Paywall Handling** | Graceful fallback to web search for Nature/Elsevier/bioRxiv papers |
+| 📦 **Batch Processing** | Parallel fetching + parallel analysis for Paper Alerts |
+
+## 🔗 Content Acquisition — 3-Tier Strategy
+
+This is the core pipeline that actually gets paper content. No magic — just layered fallbacks with honest trade-offs.
+
+```
+URL Input → Tier 1: Jina Reader (r.jina.ai) → Full Markdown text? → Done ✅
+                                              → Partial/Timeout? → Tier 2 ↓
+           → Tier 2: Scrapling StealthyFetcher → Full HTML? → Done ✅
+                                                → Failed? → Tier 3 ↓
+           → Tier 3: web_search → Metadata + abstract → Mark as partial ⚠️
+```
+
+### What Each Tier Does
+
+| Tier | Tool | Speed | Output | Best For |
+|------|------|-------|--------|----------|
+| **1** | [Jina Reader](https://github.com/jina-ai/reader) | 1-2s | Clean Markdown | arXiv, bioRxiv, open-access, most Nature articles |
+| **2** | [Scrapling](https://github.com/D4Vinci/Scrapling) + Camoufox | 5-15s | Raw HTML text | Tier 1 fails, Nature/Elsevier partial content |
+| **3** | web_search | 2-5s | Metadata only | Hard paywalls (Cell, NEJM, Lancet) |
+
+### Benchmarked Performance (real data, May 2026)
+
+| Source | Tier Used | Result | Time | Content |
+|--------|-----------|--------|------|---------|
+| arXiv PDF | Tier 1 | ✅ Full text | 0.8s | All sections |
+| bioRxiv PDF | Tier 1 | ✅ Full text | 0.8s | All sections |
+| Nature Biotechnology | Tier 1 | ✅ Full text | 1.0s | 117K chars, all sections |
+| Nature Machine Intelligence | Tier 1 → 2 | ✅ Full text | 6.3s | Jina partial → Scrapling complete |
+| Nature Reviews Drug Discovery | Tier 1 → 2 | ✅ Full text | 6.8s | 149K chars combined |
+| Elsevier/ScienceDirect | Tier 3 | ⚠️ Metadata | 3s | Abstract + citation only |
+| Cell / NEJM / Lancet | Tier 3 | ⚠️ Metadata | 3s | Abstract + citation only |
 
 ## 📖 Reading Modes
 
@@ -44,10 +75,12 @@ Full structured analysis with domain-specific checklists. Generates a comprehens
 Interactive question-answering session. Ask anything about the paper's content, figures, or methodology. Optionally saves a Q&A log.
 
 ### 📦 Batch Mode (Paper Alert)
-Process multiple papers simultaneously. Handles mixed sources:
-- **arXiv PDFs** → Direct download + MinerU full extraction
-- **Paywalled papers** (Nature, Elsevier, bioRxiv) → web_search metadata fallback
+Process multiple papers simultaneously. The 3-tier acquisition runs in parallel, then analysis runs in parallel:
+- **Open-access papers** → Tier 1 Jina Reader (full text, <2s each)
+- **Nature/Springer** → Tier 1+2 combined (full text, ~7s each)
+- **Hard paywalls** → Tier 3 web_search (metadata, ~3s each)
 - **GitHub repos** → README analysis
+- **Local PDF files** → MinerU extraction
 
 ## 🗂️ Domain Checklists
 
@@ -58,6 +91,37 @@ Process multiple papers simultaneously. Handles mixed sources:
 | 🤖 **AI / ML** | Architecture details, training data, benchmarks, SOTA comparisons, compute requirements |
 | 🔬 **Bioinformatics** | Pipeline tools, statistical tests, genome assembly, differential expression, enrichment analysis |
 | 💻 **Programming** | Algorithm complexity, system design, implementation details, performance benchmarks |
+
+## ⚠️ Honest Limitations
+
+This tool is useful but **not omnipotent**. Here's what it can and cannot do:
+
+### Content Acquisition — What We Cannot Break
+
+| Scenario | Reality | Workaround |
+|----------|---------|------------|
+| **Hard paywalls** (Cell, NEJM, Lancet, JAMA) | These require institutional login or personal subscription. No scraping tool bypasses authenticated access — and none should. | Use your university/institute VPN or library access. Provide the downloaded PDF as a local file. |
+| **Authenticated access** (institutional SSO, Shibboleth) | Logging into your university portal is outside the scope of a skill. We cannot and should not automate credential-based access. | Download the PDF manually through your institution, then feed it to Paper Reader as a local file. |
+| **Freshly published papers** | Some papers take days/weeks before being indexed by search engines or mirrored on preprint servers. | Wait for preprint availability, or access through your institution. |
+| **Supplementary materials** | Supplementary PDFs, datasets, and code are often hosted separately and may not be captured. | Provide supplementary files separately. |
+| **Non-English papers** | MinerU supports Chinese (`-l ch`) and several other languages, but Jina Reader and web_search work best with English content. | Use local PDF + MinerU with appropriate language flag. |
+
+### Analysis Quality — What You Should Know
+
+| Aspect | Reality |
+|--------|---------|
+| **Tier 3 (metadata-only) papers** | Archive notes will lack detailed methods, quantitative results, and figure descriptions. They are marked clearly. |
+| **Figure analysis** | Depends on your AI model's vision capability. Some models (e.g., text-only LLMs) cannot analyze figures. The skill falls back to image captions from extraction. |
+| **Domain detection** | Keyword-based. Interdisciplinary papers (e.g., AI + medicine) may be classified into either domain. You can override the detection. |
+| **Archive quality ≠ reading the paper yourself** | The skill produces structured summaries, not replacements for reading. Critical papers should still be read in full. |
+
+### Legal & Ethical Considerations
+
+- **Open-access papers** (arXiv, bioRxiv, PLOS, etc.): Fetching is explicitly permitted by publishers.
+- **Nature/Springer Nature**: HTML content is publicly accessible (no login required). Jina Reader and Scrapling fetch what any browser can see.
+- **Paywalled content**: When Tier 1/2 cannot access full text, we do **not** attempt to bypass authentication or circumvent paywalls. We fall back to publicly available metadata (title, abstract, authors, DOI).
+- **Rate limiting**: Jina Reader free tier is 20 RPM. Scrapling requests are throttled. We do not hammer publisher servers.
+- **TL;DR**: We fetch what's publicly visible in a browser. If you need to log in to see it, you should log in yourself.
 
 ## 🚀 Installation
 
@@ -92,6 +156,8 @@ Download this repo as ZIP, extract to `~/.hermes/skills/paper-reader/`.
 |-----------|----------|---------|
 | [Hermes Agent](https://github.com/henvic/hermes) | ✅ Yes | See Hermes docs |
 | [MinerU](https://github.com/opendatalab/MinerU) | ✅ Yes | `pip install mineru` or see their README |
+| [Jina Reader](https://github.com/jina-ai/reader) | Built-in | Uses `r.jina.ai` API, no install needed |
+| [Scrapling](https://github.com/D4Vinci/Scrapling) | Recommended | `pip install scrapling` + `pip install camoufox && python -m camoufox fetch` |
 | Obsidian | Optional | For archive notes |
 
 ## 📋 Quick Start
@@ -122,7 +188,8 @@ paper-reader/
 ├── README.md                         # This file (English)
 ├── LICENSE                           # MIT License
 ├── scripts/
-│   └── extract.sh                    # MinerU extraction helper
+│   ├── extract.sh                    # MinerU extraction helper
+│   └── fetch_paper.py                # Unified 3-tier content acquisition
 ├── references/
 │   ├── archive-template.md           # Obsidian note template
 │   ├── domain-ai-ml.md               # AI/ML analysis checklist
@@ -172,6 +239,7 @@ Followed by structured sections: 基本信息 · 研究问题 · 方法 · 核�
 | `MINERU` | MinerU binary path | Path to MinerU executable |
 | `WORK_BASE` | `/tmp/paper-reader` | Temporary working directory |
 | `ARCHIVE_BASE` | `~/obsidian/papers` | Obsidian vault archive root |
+| `JINA_READER` | `https://r.jina.ai` | Jina Reader API endpoint |
 | `EXTRACT_SCRIPT` | `scripts/extract.sh` | Extraction helper script |
 
 ## 🤝 Contributing
@@ -191,6 +259,8 @@ MIT License — see [LICENSE](LICENSE).
 ## 🙏 Acknowledgments
 
 - [MinerU](https://github.com/opendatalab/MinerU) — PDF extraction engine
+- [Jina Reader](https://github.com/jina-ai/reader) — URL-to-Markdown conversion
+- [Scrapling](https://github.com/D4Vinci/Scrapling) — Stealth web fetching with Camoufox
 - [Hermes Agent](https://github.com/henvic/hermes) — Agent framework
 - Every researcher who has 50 tabs of unread papers open right now
 
