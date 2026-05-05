@@ -1,0 +1,34 @@
+{
+  "name": "paper-reader",
+  "version": "1.0.0",
+  "description": "Academic paper analysis skill — 5-stage pipeline with 3-tier content acquisition (Jina Reader + Scrapling + MinerU). Domain-aware deep reading, Obsidian archiving, batch processing.",
+  "main": "SKILL.md",
+  "keywords": [
+    "paper",
+    "academic",
+    "research",
+    "paper-reader",
+    "mineru",
+    "jina-reader",
+    "obsidian",
+    "skill",
+    "agent",
+    "ai"
+  ],
+  "author": "Sesley Cheung",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Shizukuyu0207/paper-reader.git"
+  },
+  "homepage": "https://github.com/Shizukuyu0207/paper-reader#readme",
+  "bugs": {
+    "url": "https://github.com/Shizukuyu0207/paper-reader/issues"
+  },
+  "files": [
+    "SKILL.md",
+    "scripts/",
+    "references/",
+    "adapters/"
+  ]
+}

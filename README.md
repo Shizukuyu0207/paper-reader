@@ -143,15 +143,25 @@ We fetch what's publicly visible in a browser. If you need to log in to see it â
 
 ## ðŸš€ Installation
 
+### Option 1: npx (Recommended)
+
 ```bash
-# Clone the repo
+npx skills add Shizukuyu0207/paper-reader -g -y
+```
+
+One command. Works with Claude Code, Hermes, Cursor, and any agent that supports the [skills convention](https://github.com/anthropics/skills).
+
+### Option 2: npm
+
+```bash
+npm install paper-reader
+```
+
+### Option 3: Git Clone
+
+```bash
 git clone https://github.com/Shizukuyu0207/paper-reader.git
-
-# For Hermes: place in skill directory
 cp -r paper-reader ~/.hermes/skills/
-
-# For other agents: see adapters/ directory for config files
-# (Claude Code, Codex, OpenCode adapters included)
 ```
 
 ### Prerequisites
