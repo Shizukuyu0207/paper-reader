@@ -19,11 +19,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Shizukuyu0207/paper-reader.git"
+    "url": "git+https://github.com/nowa277/paper-reader.git"
   },
-  "homepage": "https://github.com/Shizukuyu0207/paper-reader#readme",
+  "homepage": "https://github.com/nowa277/paper-reader#readme",
   "bugs": {
-    "url": "https://github.com/Shizukuyu0207/paper-reader/issues"
+    "url": "https://github.com/nowa277/paper-reader/issues"
   },
   "files": [
     "SKILL.md",

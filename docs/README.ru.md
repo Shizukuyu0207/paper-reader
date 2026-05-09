@@ -45,7 +45,7 @@
     45|## 🚀 Установка
     46|
     47|```bash
-    48|git clone https://github.com/Shizukuyu0207/paper-reader.git
+    48|git clone https://github.com/nowa277/paper-reader.git
     49|```
     50|
     51|## 📄 Лицензия

@@ -49,7 +49,7 @@
     49|## 🚀 インストール
     50|
     51|```bash
-    52|git clone https://github.com/Shizukuyu0207/paper-reader.git
+    52|git clone https://github.com/nowa277/paper-reader.git
     53|```
     54|
     55|## 📄 ライセンス

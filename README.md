@@ -146,7 +146,7 @@ We fetch what's publicly visible in a browser. If you need to log in to see it â
 ### Option 1: npx (Recommended)
 
 ```bash
-npx skills add Shizukuyu0207/paper-reader -g -y
+npx skills add nowa277/paper-reader -g -y
 ```
 
 One command. Works with Claude Code, Hermes, Cursor, and any agent that supports the [skills convention](https://github.com/anthropics/skills).
@@ -160,7 +160,7 @@ npm install paper-reader
 ### Option 3: Git Clone
 
 ```bash
-git clone https://github.com/Shizukuyu0207/paper-reader.git
+git clone https://github.com/nowa277/paper-reader.git
 cp -r paper-reader ~/.hermes/skills/
 ```
 

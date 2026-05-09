@@ -113,7 +113,7 @@
    113|## 🚀 安装
    114|
    115|```bash
-   116|git clone https://github.com/Shizukuyu0207/paper-reader.git
+   116|git clone https://github.com/nowa277/paper-reader.git
    117|
    118|# Hermes: 放入 skill 目录
    119|cp -r paper-reader ~/.hermes/skills/

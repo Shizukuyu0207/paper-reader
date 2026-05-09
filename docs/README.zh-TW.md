@@ -49,7 +49,7 @@
     49|## 🚀 安裝
     50|
     51|```bash
-    52|git clone https://github.com/Shizukuyu0207/paper-reader.git
+    52|git clone https://github.com/nowa277/paper-reader.git
     53|# Hermes: cp -r paper-reader ~/.hermes/skills/
     54|# 其他 Agent: 見 adapters/
     55|```
